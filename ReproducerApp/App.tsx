@@ -5,127 +5,126 @@
  * @format
  */
 
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {Text, TouchableHighlight, View} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const RootStack = createStackNavigator();
+const PreLoginStack = createStackNavigator();
+const PostLoginStack = createStackNavigator();
+const BottomTabsNav = createBottomTabNavigator();
+const HomeTopTabs = createMaterialTopTabNavigator();
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+function DetailsScreen1(): React.JSX.Element {
+  const navigator = useNavigation();
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <ScrollView contentContainerStyle={{flexGrow: 1}}>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <Text>Details Screen 1</Text>
+        <TouchableHighlight
+          onPress={() => navigator.navigate('DetailsScreen2')}>
+          <Text>Go to Details Screen 2</Text>
+        </TouchableHighlight>
+      </View>
+    </ScrollView>
+  );
+}
+
+function DetailsScreen2(): React.JSX.Element {
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text>Details Screen 2</Text>
     </View>
+  );
+}
+
+function MyTab1(): React.JSX.Element {
+  const navigator = useNavigation();
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text>My Tab 1</Text>
+      <TouchableHighlight onPress={() => navigator.navigate('DetailsScreen1')}>
+        <Text>Go to Details Screen 1</Text>
+      </TouchableHighlight>
+    </View>
+  );
+}
+
+function MyTab2(): React.JSX.Element {
+  const navigator = useNavigation();
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text>My Tab 2</Text>
+      <TouchableHighlight onPress={() => navigator.navigate('DetailsScreen2')}>
+        <Text>Go to Details Screen 2</Text>
+      </TouchableHighlight>
+    </View>
+  );
+}
+
+function Profile(): React.JSX.Element {
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text>Profile</Text>
+    </View>
+  );
+}
+
+function HomeTabs(): React.JSX.Element {
+  return (
+    <HomeTopTabs.Navigator>
+      <HomeTopTabs.Screen name="MyTab1" component={MyTab1} />
+      <HomeTopTabs.Screen name="MyTab2" component={MyTab2} />
+    </HomeTopTabs.Navigator>
+  );
+}
+
+function BottomTabs(): React.JSX.Element {
+  return (
+    <BottomTabsNav.Navigator>
+      <BottomTabsNav.Screen name="Home" component={HomeTabs} />
+      <BottomTabsNav.Screen name="Profile" component={Profile} />
+    </BottomTabsNav.Navigator>
+  );
+}
+
+function PostLogin(): React.JSX.Element {
+  return (
+    <PostLoginStack.Navigator initialRouteName="BottomTabs">
+      <PostLoginStack.Screen
+        name="BottomTabs"
+        component={BottomTabs}
+        options={{headerShown: false}}
+      />
+      <PostLoginStack.Screen name="DetailsScreen1" component={DetailsScreen1} />
+      <PostLoginStack.Screen name="DetailsScreen2" component={DetailsScreen2} />
+    </PostLoginStack.Navigator>
+  );
+}
+
+function PreLogin(): React.JSX.Element {
+  return (
+    <PreLoginStack.Navigator>
+      <PreLoginStack.Screen name="home" component={Home} />
+    </PreLoginStack.Navigator>
   );
 }
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  /*
-   * To keep the template simple and small we're adding padding to prevent view
-   * from rendering under the System UI.
-   * For bigger apps the recommendation is to use `react-native-safe-area-context`:
-   * https://github.com/AppAndFlow/react-native-safe-area-context
-   *
-   * You can read more about it here:
-   * https://github.com/react-native-community/discussions-and-proposals/discussions/827
-   */
-  const safePadding = '5%';
-
   return (
-    <View style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        style={backgroundStyle}>
-        <View style={{paddingRight: safePadding}}>
-          <Header/>
-        </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            paddingHorizontal: safePadding,
-            paddingBottom: safePadding,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </View>
+    <NavigationContainer>
+      <RootStack.Navigator
+        initialRouteName="postlogin"
+        screenOptions={{headerShown: false, animation: 'none'}}>
+        <RootStack.Screen name="prelogin" component={PreLogin} />
+        <RootStack.Screen name="postlogin" component={PostLogin} />
+      </RootStack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
