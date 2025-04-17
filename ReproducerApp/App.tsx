@@ -12,10 +12,11 @@ import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {Text, TouchableHighlight, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
-
+import HeavyRenderingComponent from './HeavyRenderingComponent';
 const RootStack = createStackNavigator();
 const PreLoginStack = createStackNavigator();
 const PostLoginStack = createStackNavigator();
+const OtherStack = createStackNavigator();
 const BottomTabsNav = createBottomTabNavigator();
 const HomeTopTabs = createMaterialTopTabNavigator();
 
@@ -37,7 +38,7 @@ function DetailsScreen1(): React.JSX.Element {
 function DetailsScreen2(): React.JSX.Element {
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Details Screen 2</Text>
+      <HeavyRenderingComponent />
     </View>
   );
 }
@@ -47,7 +48,10 @@ function MyTab1(): React.JSX.Element {
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text>My Tab 1</Text>
-      <TouchableHighlight onPress={() => navigator.navigate('DetailsScreen1')}>
+      <TouchableHighlight
+        onPress={() =>
+          navigator.navigate('others', {screen: 'DetailsScreen1'})
+        }>
         <Text>Go to Details Screen 1</Text>
       </TouchableHighlight>
     </View>
@@ -59,7 +63,10 @@ function MyTab2(): React.JSX.Element {
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text>My Tab 2</Text>
-      <TouchableHighlight onPress={() => navigator.navigate('DetailsScreen2')}>
+      <TouchableHighlight
+        onPress={() =>
+          navigator.navigate('others', {screen: 'DetailsScreen2'})
+        }>
         <Text>Go to Details Screen 2</Text>
       </TouchableHighlight>
     </View>
@@ -100,9 +107,21 @@ function PostLogin(): React.JSX.Element {
         component={BottomTabs}
         options={{headerShown: false}}
       />
-      <PostLoginStack.Screen name="DetailsScreen1" component={DetailsScreen1} />
-      <PostLoginStack.Screen name="DetailsScreen2" component={DetailsScreen2} />
+      <PostLoginStack.Screen
+        name="others"
+        component={otherScreens}
+        options={{headerShown: false}}
+      />
     </PostLoginStack.Navigator>
+  );
+}
+
+function otherScreens(): React.JSX.Element {
+  return (
+    <OtherStack.Navigator initialRouteName="DetailsScreen1">
+      <OtherStack.Screen name="DetailsScreen1" component={DetailsScreen1} />
+      <OtherStack.Screen name="DetailsScreen2" component={DetailsScreen2} />
+    </OtherStack.Navigator>
   );
 }
 
