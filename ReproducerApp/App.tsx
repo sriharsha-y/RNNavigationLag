@@ -7,10 +7,14 @@
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {
+  CommonActions,
+  NavigationContainer,
+  useNavigation,
+} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import React from 'react';
-import {Text, TouchableHighlight, View} from 'react-native';
+import React, {createContext, ReactNode, useContext, useState} from 'react';
+import {Text, TouchableOpacity, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import HeavyRenderingComponent from './HeavyRenderingComponent';
 const RootStack = createStackNavigator();
@@ -20,16 +24,39 @@ const OtherStack = createStackNavigator();
 const BottomTabsNav = createBottomTabNavigator();
 const HomeTopTabs = createMaterialTopTabNavigator();
 
+function PreloginDashboard(): React.JSX.Element {
+  const navigation = useNavigation();
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text>Prelogin Dashboard</Text>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'Postlogin',
+                },
+              ],
+            }),
+          )
+        }>
+        <Text>Login</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 function DetailsScreen1(): React.JSX.Element {
-  const navigator = useNavigation();
+  const navigation = useNavigation();
   return (
     <ScrollView contentContainerStyle={{flexGrow: 1}}>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <Text>Details Screen 1</Text>
-        <TouchableHighlight
-          onPress={() => navigator.navigate('DetailsScreen2')}>
+        <TouchableOpacity onPress={() => navigation.navigate('DetailsScreen2')}>
           <Text>Go to Details Screen 2</Text>
-        </TouchableHighlight>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -44,31 +71,31 @@ function DetailsScreen2(): React.JSX.Element {
 }
 
 function MyTab1(): React.JSX.Element {
-  const navigator = useNavigation();
+  const navigation = useNavigation();
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text>My Tab 1</Text>
-      <TouchableHighlight
+      <TouchableOpacity
         onPress={() =>
-          navigator.navigate('others', {screen: 'DetailsScreen1'})
+          navigation.navigate('Others', {screen: 'DetailsScreen1'})
         }>
         <Text>Go to Details Screen 1</Text>
-      </TouchableHighlight>
+      </TouchableOpacity>
     </View>
   );
 }
 
 function MyTab2(): React.JSX.Element {
-  const navigator = useNavigation();
+  const navigation = useNavigation();
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text>My Tab 2</Text>
-      <TouchableHighlight
+      <TouchableOpacity
         onPress={() =>
-          navigator.navigate('others', {screen: 'DetailsScreen2'})
+          navigation.navigate('Others', {screen: 'DetailsScreen2'})
         }>
         <Text>Go to Details Screen 2</Text>
-      </TouchableHighlight>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -91,8 +118,29 @@ function HomeTabs(): React.JSX.Element {
 }
 
 function BottomTabs(): React.JSX.Element {
+  const navigation = useNavigation();
   return (
-    <BottomTabsNav.Navigator>
+    <BottomTabsNav.Navigator
+      screenOptions={{
+        headerRight: () => (
+          <TouchableOpacity
+            style={{paddingRight: 10}}
+            onPress={() =>
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: 'Prelogin',
+                    },
+                  ],
+                }),
+              )
+            }>
+            <Text>Logout</Text>
+          </TouchableOpacity>
+        ),
+      }}>
       <BottomTabsNav.Screen name="Home" component={HomeTabs} />
       <BottomTabsNav.Screen name="Profile" component={Profile} />
     </BottomTabsNav.Navigator>
@@ -108,7 +156,7 @@ function PostLogin(): React.JSX.Element {
         options={{headerShown: false}}
       />
       <PostLoginStack.Screen
-        name="others"
+        name="Others"
         component={otherScreens}
         options={{headerShown: false}}
       />
@@ -128,7 +176,10 @@ function otherScreens(): React.JSX.Element {
 function PreLogin(): React.JSX.Element {
   return (
     <PreLoginStack.Navigator>
-      <PreLoginStack.Screen name="home" component={Home} />
+      <PreLoginStack.Screen
+        name="PreloginDashboard"
+        component={PreloginDashboard}
+      />
     </PreLoginStack.Navigator>
   );
 }
@@ -137,10 +188,10 @@ function App(): React.JSX.Element {
   return (
     <NavigationContainer>
       <RootStack.Navigator
-        initialRouteName="postlogin"
+        initialRouteName="Prelogin"
         screenOptions={{headerShown: false, animation: 'none'}}>
-        <RootStack.Screen name="prelogin" component={PreLogin} />
-        <RootStack.Screen name="postlogin" component={PostLogin} />
+        <RootStack.Screen name="Prelogin" component={PreLogin} />
+        <RootStack.Screen name="Postlogin" component={PostLogin} />
       </RootStack.Navigator>
     </NavigationContainer>
   );
